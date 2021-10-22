@@ -1,0 +1,31 @@
+server {
+    listen 80;
+    server_name "{{ nginx_redmine_url | default('localhost') }}";
+
+    root "{{ redmine_path }}/redmine-{{ redmine_version }}/public";
+
+    # serve static (compiled) assets directly if they exist (for rails production)
+    location ~ ^/(assets|images|javascripts|stylesheets|swfs|system)/   {
+      try_files $uri @rails;
+      access_log off;
+      gzip_static on;
+      # to serve pre-gzipped version
+      expires 10d;
+      add_header Cache-Control public;
+
+      add_header ETag "";
+      break;
+    }
+
+    error_page   500 502 503 504  /500.html;
+    location = /500.html {
+        root   html;
+    }
+    
+    # log files
+    access_log /var/log/nginx/redmine_production.access.log;
+    error_log /var/log/nginx/redmine_production.error.log;
+    
+    passenger_enabled on;
+    client_max_body_size 10m;
+}

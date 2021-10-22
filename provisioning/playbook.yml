@@ -4,9 +4,9 @@
   roles:
     - common
     - db
-    #- nginx
     - ruby
     - redmine
+    - nginx
     #- clean
   vars_files:
     - vars/all.yml

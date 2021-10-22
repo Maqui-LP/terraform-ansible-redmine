@@ -9,3 +9,6 @@ email_smtp_authentication: :login
 email_smtp_domain: foo.com
 email_smtp_username: myaccount
 email_smtp_password: password
+nginx_redmine_url: localhost
+redmine_version: 4.2.3
+redmine_path: /usr/local/share
