@@ -1,0 +1,16 @@
+---
+- name: Deploy Redmine
+  hosts: all
+  roles:
+    - common
+    - db
+    #- nginx
+    - ruby
+    - redmine
+    #- clean
+  vars_files:
+    - vars/all.yml
+
+
+
+  

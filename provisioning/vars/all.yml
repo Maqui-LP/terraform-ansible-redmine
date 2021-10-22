@@ -1,0 +1,11 @@
+---
+redmine_db_pass: password
+root_db_pass: root
+guest_user: vagrant
+email_delivery_method: :smtp
+email_smtp_address: example.com
+email_smtp_port: 25
+email_smtp_authentication: :login
+email_smtp_domain: foo.com
+email_smtp_username: myaccount
+email_smtp_password: password

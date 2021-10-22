@@ -1,0 +1,8 @@
+---
+- name: MySQL | Restart
+  become: yes
+  service: name=mysql state=restarted
+
+- name: MySQL | Reload
+  become: yes
+  service: name=mysql state=reloaded

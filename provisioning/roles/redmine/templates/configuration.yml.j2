@@ -1,0 +1,16 @@
+# specific configuration options for production environment
+# that overrides the default ones
+production:
+  email_delivery:
+    delivery_method: {{ email_delivery_method }}
+    smtp_settings:
+      address: {{ email_smtp_address }}
+      port: {{ email_smtp_port }}
+      domain: {{ email_smtp_domain }}
+      authentication: {{ email_smtp_authentication }}
+      user_name: {{ email_smtp_username }}
+      password: {{ email_smtp_password }}
+
+# specific configuration options for development environment
+# that overrides the default ones
+development:
