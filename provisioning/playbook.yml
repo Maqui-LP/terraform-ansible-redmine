@@ -4,10 +4,9 @@
   roles:
     - common
     - db
-    - ruby
     - redmine
     - nginx
-    #- clean
+    - iptables
   vars_files:
     - vars/all.yml
 

@@ -1,4 +1,12 @@
 ---
+- name: Ruby | Install
+  become: yes
+  apt: pkg=ruby-full
+
+- name: Ruby | Install Bundler
+  become: yes
+  shell: gem install bundler --no-rdoc --no-ri
+  
 - name: Redmine | Install
   become: yes
   get_url: 
