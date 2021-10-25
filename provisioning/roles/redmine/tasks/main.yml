@@ -27,7 +27,7 @@
   become: yes
   file:
     dest: "{{ redmine_path }}/redmine-{{ redmine_version }}"
-    owner: "{{ guest_user }}"
+    owner: "{{ guest_user }}" ## hacer que sea un usuario redmine perteneciente al redmine group
     recurse: yes
 
 - name: Redmine | Install Dependencies
