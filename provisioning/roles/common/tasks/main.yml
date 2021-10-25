@@ -36,8 +36,6 @@
       - mysql-server
       - nginx
       - passenger
-      - python-pip
-      - python-mysqldb
       - python3-pip 
       - python3-mysqldb
       - unzip
