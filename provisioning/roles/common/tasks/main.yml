@@ -42,4 +42,5 @@
 
 - name: System | Install pymysql
   become: yes
-  shell: python3 -m pip install PyMySQL
+  pip:
+    name: PyMySQL
