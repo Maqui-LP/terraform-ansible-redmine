@@ -30,18 +30,9 @@
       - gnupg
       - imagemagick
       - libcurl4-openssl-dev 
-      - libncurses5-dev #!
-      - libffi-dev #!
-      - libgdbm5 #!
-      - libgdbm-dev #!
-      - libmagickcore-dev #!
       - libmagickwand-dev
       - libmysqlclient-dev
       - libnginx-mod-http-passenger
-      - libreadline6-dev #!
-      - libreadline-dev #!
-      - libssl-dev #!
-      - libyaml-dev #!
       - mysql-server
       - nginx
       - passenger
@@ -50,7 +41,6 @@
       - python3-pip 
       - python3-mysqldb
       - unzip
-      - zlib1g-dev #!
 
 - name: System | Install pymysql
   become: yes
