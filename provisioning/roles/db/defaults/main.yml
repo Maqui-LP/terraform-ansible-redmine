@@ -1,6 +1,6 @@
 ---
 # default vars for db role
-# to override them: group_vars/all
+# to override them: vars/all
 
 redmine_db_name: redmine
 redmine_db_user: redmine

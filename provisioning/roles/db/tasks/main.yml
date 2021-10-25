@@ -3,13 +3,13 @@
   service: name=mysql state=started enabled=yes
 
 ## looks for file redmine_db_pass on root directory to set the db password
-#- name: generate DB user password
-#  set_fact: redmine_db_pass={{ lookup('password', '../../../redmine_db_pass') }}
-#  when: redmine_db_pass is not defined or not redmine_db_pass
+- name: generate DB user password
+  set_fact: redmine_db_pass={{ lookup('password', '../../../redmine_db_pass') }}
+  when: redmine_db_pass is not defined or not redmine_db_pass
 
-# - name: generate DB root password
-#   set_fact: root_db_pass={{ lookup('password', '../../../root_db_pass') }}
-#   when: root_db_pass is not defined or not root_db_pass
+- name: generate DB root password
+  set_fact: root_db_pass={{ lookup('password', '../../../root_db_pass') }}
+  when: root_db_pass is not defined or not root_db_pass
 
 - name: MySQL | Root verification
   shell: "mysqladmin -uroot -p{{ root_db_pass }} ping"
