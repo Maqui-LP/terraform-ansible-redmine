@@ -5,4 +5,4 @@ redmine_db_user: redmine # defined in role defaults for db
 redmine_db_pass: password
 redmine_url: https://www.redmine.org/releases/
 redmine_version: 4.2.3
-redmine_path: /usr/local/share
+redmine_path: /home/redmine

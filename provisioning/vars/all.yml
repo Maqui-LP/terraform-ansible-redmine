@@ -4,4 +4,4 @@ root_db_pass: root
 guest_user: vagrant
 nginx_redmine_url: localhost
 redmine_version: 4.2.3
-redmine_path: /usr/local/share
+redmine_path: /home/redmine
