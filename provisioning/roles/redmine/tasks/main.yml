@@ -1,5 +1,5 @@
 ---
-# prepare users and groups
+# prepare redmine user and group
 - name: Redmine | Create redmine group
   become: yes
   group:
@@ -12,139 +12,153 @@
     name: redmine
     shell: /bin/bash
     group: redmine
-    groups: redmine
     state: present
 
-- name: Redmine | Create redmine_admin group
-  become: yes
-  group:
-    name: redmine_admin
-    state: present
-
-- name: Redmine | Create redmine_admin user
-  become: yes
-  user:
-    name: redmine_admin
-    shell: /bin/bash
-    group: redmine
-    groups: redmine,redmine_admin
-    state: present
-
-- name: Redmine | Passwordless sudo to redmine_admin
-  become: yes
-  lineinfile: "dest=/etc/sudoers state=present
-    regexp='^redmine_admin ALL= NOPASSWD'
-    line='redmine_admin ALL= NOPASSWD: ALL'"
-
-- name: Redmine | Set up /home for redmine user
+- name: Redmine | Set up redmine runtime dir
   become: yes
   file:
     owner: redmine
     group: redmine
-    path: "/home/redmine"
+    path: "{{ redmine_path }}"
     mode: 775
     state: directory
     recurse: yes
 
+# - name: Redmine | Create redmine_admin group
+#   become: yes
+#   group:
+#     name: redmine_admin
+#     state: present
+
+# - name: Redmine | Create redmine_admin user
+#   become: yes
+#   become_method: sudo
+#   user:
+#     name: redmine_admin
+#     shell: /bin/bash
+#     createhome: yes
+#     group: redmine
+#     groups: sudo,redmine_admin,redmine
+#     append: yes
+#     state: present
+
+# - name: Redmine | Passwordless sudo to redmine_admin
+#   become: yes
+#   lineinfile:
+#     dest: /etc/sudoers
+#     state: present
+#     regexp: '^%redmine_admin'
+#     line: '%redmine_admin ALL=(ALL:ALL) NOPASSWD: ALL'
+#     validate: 'visudo -cf %s'
+
 - name: Redmine | Install Ruby
   become: yes
-  become_user: redmine_admin
   apt: pkg=ruby-full
 
 - name: Redmine | Install Ruby Bundler
   become: yes
-  #become_user: redmine #_admin
   community.general.gem:
     name: bundler
     state: present
-    #install_dir: /home/redmine
     user_install: no
 
-#- include: redmine.yml
+# don´t download and unzip redmine unless it does not exists
+#
+# if "{{ redmine_path }}/redmine-{{ redmine_version }}/Gemfile" exists
+# then it is OK to assume that the extract step was executed successfully
+- name: Redmine | Check whether Redmine is already downloaded
+  stat:
+    path: "{{ redmine_path }}/redmine-{{ redmine_version }}/Gemfile"
+  register: redmine_cat
 
 - name: Redmine | Download source code
   become_user: redmine
   get_url:
     url: "{{ redmine_url }}/redmine-{{ redmine_version }}.zip"
-    dest: /tmp/redmine.zip
+    dest: "/tmp/redmine.zip"
+  when: not redmine_cat.stat.exists
 
-- name: Redmine | Delete destination folder
+- name: Redmine | Ensure redmine runtime directory exists
   become: yes
-  #become_user: redmine #_admin
+  become_user: redmine
   file:
-    state: absent
-    path: "{{ redmine_path }}/redmine-{{ redmine_version }}"
+    path: "{{ redmine_path }}"
+    state: directory
+    owner: redmine
+    group: redmine
+  when: not redmine_cat.stat.exists
 
 - name: Redmine | Extract
   become: yes
-  #become_user: redmine_admin
-  #shell: unzip /tmp/redmine.zip -d "{{ redmine_path }}"
   unarchive:
     src: /tmp/redmine.zip
     dest: "{{ redmine_path }}"
     owner: redmine
     group: redmine
+    mode: 775
+    copy: false
+  when: not redmine_cat.stat.exists
 
-
-- name: Redmine | Set up redmine path for redmine user
-  become: yes
-  file:
-    owner: redmine
-    group: redmine
-    path: "{{ redmine_path }}/redmine-{{ redmine_version }}"
-    #mode: 775
-    state: directory
-    recurse: yes
-
-- name: Redmine | Install Dependencies
-  become: yes
-  #become_user: redmine_admin
-  shell: bundle install 
-  args:
-    chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
-  #bundler: 
+# - name: Redmine | Change owner
+#   become: yes
+#   file:
+#     dest: "{{ redmine_path }}/redmine-{{ redmine_version }}"
+#     owner: redmine ## hacer que sea un usuario redmine perteneciente al redmine group
+#     recurse: yes
 
 - name: Redmine | Copy DB configuration
-  become: yes
-  #become_user: redmine_admin
+  become_user: redmine
   template:
     src: database.yml.j2
     dest: "{{ redmine_path }}/redmine-{{ redmine_version }}/config/database.yml"
     mode: 0644
+  when: not redmine_cat.stat.exists
 
 - name: Redmine | Copy Configuration
-  become: yes
-  #become_user: redmine_admin
+  become_user: redmine
   template:
     src: configuration.yml.j2
     dest: "{{ redmine_path }}/redmine-{{ redmine_version }}/config/configuration.yml"
     mode: 0644
+  when: not redmine_cat.stat.exists
+
+- name: Redmine | Install Dependencies
+  become: yes
+  shell: bundle install 
+  args:
+    chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
+
 
 - name: Redmine | Install mysql2 gem
   become: yes
-  #become_user: redmine
   community.general.gem:
     name: mysql2
     state: latest
 
 - name: Redmine | Generate secret token
   become: yes
-  #become_user: redmine
   shell: bundler exec rake generate_secret_token
   args:
     chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
 
 - name: Redmine | Migrate DB
   become: yes
-  #become_user: redmine
   shell: RAILS_ENV=production bundle exec rake db:migrate
   args:
     chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
 
 - name: Redmine | Generate default config
   become: yes
-  #become_user: redmine
   shell: bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=en
   args:
     chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
 
+
+# - name: Redmine | Permissions
+#   become: yes
+#   file:
+#     path: "{{ redmine_path }}/redmine-{{ redmine_version }}"
+#     owner: redmine
+#     group: redmine
+#     mode: 775
+#     recurse: yes
