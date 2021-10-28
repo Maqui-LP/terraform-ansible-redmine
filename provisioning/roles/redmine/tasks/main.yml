@@ -52,7 +52,7 @@
   apt: pkg=ruby-full
 
 - name: Redmine | Install Ruby Bundler
-  #become: yes
+  become: yes
   #become_user: redmine #_admin
   community.general.gem:
     name: bundler
@@ -97,49 +97,53 @@
     recurse: yes
 
 - name: Redmine | Install Dependencies
-  #become: yes
-  become_user: redmine #_admin
+  become: yes
+  #become_user: redmine_admin
   shell: bundle install 
   args:
     chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
   #bundler: 
 
-
-
 - name: Redmine | Copy DB configuration
-  become_user: redmine
+  become: yes
+  #become_user: redmine_admin
   template:
     src: database.yml.j2
     dest: "{{ redmine_path }}/redmine-{{ redmine_version }}/config/database.yml"
     mode: 0644
 
 - name: Redmine | Copy Configuration
-  become_user: redmine
+  become: yes
+  #become_user: redmine_admin
   template:
     src: configuration.yml.j2
     dest: "{{ redmine_path }}/redmine-{{ redmine_version }}/config/configuration.yml"
     mode: 0644
 
 - name: Redmine | Install mysql2 gem
-  become_user: redmine
+  become: yes
+  #become_user: redmine
   community.general.gem:
     name: mysql2
     state: latest
 
 - name: Redmine | Generate secret token
-  become_user: redmine
+  become: yes
+  #become_user: redmine
   shell: bundler exec rake generate_secret_token
   args:
     chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
 
 - name: Redmine | Migrate DB
-  become_user: redmine
+  become: yes
+  #become_user: redmine
   shell: RAILS_ENV=production bundle exec rake db:migrate
   args:
     chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
 
 - name: Redmine | Generate default config
-  become_user: redmine
+  become: yes
+  #become_user: redmine
   shell: bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=en
   args:
     chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
