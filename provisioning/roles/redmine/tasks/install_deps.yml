@@ -1,0 +1,70 @@
+---
+- name: Redmine | Install bundler gem
+  become_user: "{{ redmine_rvm_user }}"
+  become: yes
+  shell: "rvm-exec {{ redmine_rvm_ruby_version }} gem install bundler"
+  args:
+    chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
+  environment:
+    PATH: "{{ redmine_rvm_path }}:{{ ansible_env.PATH }}"
+    
+- name: Redmine | Install mysql2 gem
+  become_user: "{{ redmine_rvm_user }}"
+  become: yes
+  shell: "rvm-exec {{ redmine_rvm_ruby_version }} gem install mysql2"
+  args:
+    chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
+  environment:
+    PATH: "{{ redmine_rvm_path }}:{{ ansible_env.PATH }}"
+
+- name: Redmine | Install redmine dependencies
+  become_user: "{{ redmine_rvm_user }}"
+  become: yes
+  shell: "rvm-exec {{ redmine_rvm_ruby_version }} bundle install"
+  args:
+    chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
+  environment:
+    PATH: "{{ redmine_rvm_path }}:{{ ansible_env.PATH }}"
+    
+- name: Redmine | Copy DB configuration
+  become_user: "{{ redmine_rvm_user }}"
+  become: yes
+  template:
+    src: database.yml.j2
+    dest: "{{ redmine_path }}/redmine-{{ redmine_version }}/config/database.yml"
+    mode: 0644
+
+- name: Redmine | Copy Configuration
+  become_user: "{{ redmine_rvm_user }}"
+  become: yes
+  template:
+    src: configuration.yml.j2
+    dest: "{{ redmine_path }}/redmine-{{ redmine_version }}/config/configuration.yml"
+    mode: 0644
+
+- name: Redmine | Generate secret token
+  become_user: "{{ redmine_rvm_user }}"
+  become: yes
+  shell: "rvm-exec {{ redmine_rvm_ruby_version }} bundle exec rake generate_secret_token"
+  args:
+    chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
+  environment:
+    PATH: "{{ redmine_rvm_path }}:{{ ansible_env.PATH }}"
+    
+- name: Redmine | Migrate Databases
+  become_user: "{{ redmine_rvm_user }}"
+  become: yes
+  shell: "rvm-exec {{ redmine_rvm_ruby_version }} bundle exec rake db:migrate RAILS_ENV=production"
+  args:
+    chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
+  environment:
+    PATH: "{{ redmine_rvm_path }}:{{ ansible_env.PATH }}"
+
+- name: Redmine | Generate default config
+  become_user: "{{ redmine_rvm_user }}"
+  become: yes
+  shell: "rvm-exec {{ redmine_rvm_ruby_version }} bundle exec rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=en"
+  args:
+    chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
+  environment:
+    PATH: "{{ redmine_rvm_path }}:{{ ansible_env.PATH }}"

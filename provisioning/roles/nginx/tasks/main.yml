@@ -17,14 +17,6 @@
     dest: "/etc/nginx/sites-enabled/{{ nginx_redmine_url }}.conf"
     state: link
 
-- name: Add the user www-data to redmine group
-  become: yes
-  user:
-    name: www-data
-    shell: /bin/bash
-    groups: redmine
-    append: yes
-
 - name: Nginx | Restart
   become: yes
   service:

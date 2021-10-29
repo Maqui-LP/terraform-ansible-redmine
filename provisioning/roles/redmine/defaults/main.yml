@@ -5,4 +5,9 @@ redmine_db_user: redmine # defined in role defaults for db
 redmine_db_pass: password
 redmine_url: https://www.redmine.org/releases/
 redmine_version: 4.2.3
-redmine_path: /home/redmine
+redmine_path: /var/www
+redmine_user: redmine
+redmine_rvm_user: redmine_rvm
+redmine_rvm_ruby_version: 2.6.6
+redmine_rvm_temp_installer_path: /tmp/install_rvm.sh
+redmine_rvm_path: "/home/{{ redmine_rvm_user }}/.rvm/gems/ruby-{{ redmine_rvm_ruby_version }}/bin:/home/{{ redmine_rvm_user }}/.rvm/gems/ruby-{{ redmine_rvm_ruby_version }}@global/bin:/home/{{ redmine_rvm_user }}/.rvm/rubies/ruby-{{ redmine_rvm_ruby_version }}/bin:/home/{{ redmine_rvm_user }}/.rvm/bin:/usr/share/rvm/bin:/usr/share/rvm/gems/ruby-{{ redmine_rvm_ruby_version }}/bin:/usr/share/rvm/gems/ruby-{{ redmine_rvm_ruby_version }}:/usr/share/rvm/gems/ruby-{{ redmine_rvm_ruby_version }}@global"
