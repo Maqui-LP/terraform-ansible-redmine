@@ -1,0 +1,45 @@
+---
+- name: Redmine | Add needed repository
+  become: yes
+  apt_repository:
+    repo: ppa:rael-gc/rvm
+    state: present
+
+- name: Redmine | apt-get update
+  become: yes
+  apt: 
+    update_cache: yes
+
+- name: Redmine | Install RVM
+  become: yes
+  apt:
+    state: present
+    name:
+      - rvm
+
+- name: Redmine | Create user that will use rvm
+  become: yes
+  user:
+    name: "{{ redmine_rvm_user }}"
+    groups:
+      - redmine
+      - rvm
+    shell: /bin/bash
+
+- name: Redmine | Ensure that ruby is installed
+  become: yes
+  become_user: "{{ redmine_rvm_user }}"
+  command: "rvm install {{ redmine_rvm_ruby_version }}"
+  args:
+    creates: "/home/{{ redmine_rvm_user }}/.rvm/gems/ruby-{{ redmine_rvm_ruby_version }}"
+  environment:
+    PATH: "{{ redmine_rvm_path }}:{{ ansible_env.PATH }}"
+
+- name: Redmine | Set default version of ruby with rvm
+  become: yes
+  become_user: "{{ redmine_rvm_user }}"
+  command: "rvm alias create default ruby-{{ redmine_rvm_ruby_version }}"
+  args:
+    creates: /home/{{ redmine_rvm_user }}/.rvm/config/alias
+  environment:
+    PATH: "{{ redmine_rvm_path }}:{{ ansible_env.PATH }}"

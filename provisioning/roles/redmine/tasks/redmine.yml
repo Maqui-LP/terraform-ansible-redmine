@@ -1,0 +1,28 @@
+---
+- name: Redmine | Download Readmine version "{{ redmine_version }}"
+  become: yes
+  become_user: "{{ redmine_user }}"
+  get_url:
+    url: "{{ redmine_url }}/redmine-{{ redmine_version }}.zip"
+    dest: "/tmp/redmine.zip"
+
+- name: Redmine | Extract
+  become: yes
+  # become_user: "{{ redmine_user }}"
+  unarchive:
+    src: /tmp/redmine.zip
+    dest: "/home/{{ redmine_user }}"
+    copy: false
+
+- name: Readmine | Move folder to {{ redmine_path }}
+  become: yes
+  command: mv "/home/{{ redmine_user }}/redmine-{{ redmine_version }}" "{{ redmine_path }}"
+
+# Change owner to RVM user so it can install the dependencies
+- name: Redmine | Change owner to "{{ redmine_rvm_user }}"
+  become: yes
+  file:
+    dest: "{{ redmine_path }}/redmine-{{ redmine_version }}"
+    owner: "{{ redmine_rvm_user }}"
+    group: redmine
+    recurse: yes

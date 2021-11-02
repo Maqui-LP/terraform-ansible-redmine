@@ -1,7 +1,11 @@
 ---
+nginx_redmine_url: localhost
 redmine_db_pass: password
 root_db_pass: root
 guest_user: vagrant
-nginx_redmine_url: localhost
 redmine_version: 4.2.3
-redmine_path: /usr/local/share
+redmine_path: /var/www
+redmine_user: redmine
+redmine_rvm_user: redmine_rvm
+redmine_rvm_ruby_version: 2.6.6
+redmine_rvm_path: "/home/{{ redmine_rvm_user }}/.rvm/gems/ruby-{{ redmine_rvm_ruby_version }}/bin:/home/{{ redmine_rvm_user }}/.rvm/gems/ruby-{{ redmine_rvm_ruby_version }}@global/bin:/home/{{ redmine_rvm_user }}/.rvm/rubies/ruby-{{ redmine_rvm_ruby_version }}/bin:/home/{{ redmine_rvm_user }}/.rvm/bin:/usr/share/rvm/bin:/usr/share/rvm/gems/ruby-{{ redmine_rvm_ruby_version }}/bin:/usr/share/rvm/gems/ruby-{{ redmine_rvm_ruby_version }}:/usr/share/rvm/gems/ruby-{{ redmine_rvm_ruby_version }}@global"
