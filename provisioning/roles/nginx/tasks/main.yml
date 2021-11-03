@@ -16,6 +16,7 @@
     src: "/etc/nginx/sites-available/{{ nginx_redmine_url }}.conf"
     dest: "/etc/nginx/sites-enabled/{{ nginx_redmine_url }}.conf"
     state: link
+  #notify: Nginx | Restart
 
 - name: Nginx | Restart
   become: yes

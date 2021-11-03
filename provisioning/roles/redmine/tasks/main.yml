@@ -20,14 +20,16 @@
 
 # Install ruby dependencies on redmine
 - include: install_deps.yml
-  when: not redmine_directory.stat.exists
+  #when: not redmine_directory.stat.exists
+
+- include: puma.yml
 
 # Change owner to redmine user so it can be used by nginx
-- name: Redmine | Change owner to "{{ redmine_rvm_user }}"
-  become: yes
-  file:
-    dest: "{{ redmine_path }}/redmine-{{ redmine_version }}"
-    owner: "{{ redmine_user }}"
-    group: redmine
-    recurse: yes
-  when: not redmine_directory.stat.exists
+# - name: Redmine | Change owner to "{{ redmine_rvm_user }}"
+#   become: yes
+#   file:
+#     dest: "{{ redmine_path }}/redmine-{{ redmine_version }}"
+#     owner: "{{ redmine_user }}"
+#     group: redmine
+#     recurse: yes
+#   when: not redmine_directory.stat.exists

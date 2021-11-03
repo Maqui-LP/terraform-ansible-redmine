@@ -1,0 +1,7 @@
+---
+- name: Redmine | Restart Puma
+  become: yes
+  service:
+    name: puma
+    state: restarted
+    enabled: yes
