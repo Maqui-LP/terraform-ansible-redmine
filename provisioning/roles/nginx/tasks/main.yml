@@ -9,6 +9,7 @@
   template:
     src: nginx.conf.j2
     dest: "/etc/nginx/sites-available/{{ nginx_redmine_url }}.conf"
+    mode: 0644
 
 - name: Nginx | Symbolic Link
   become: yes
@@ -16,11 +17,13 @@
     src: "/etc/nginx/sites-available/{{ nginx_redmine_url }}.conf"
     dest: "/etc/nginx/sites-enabled/{{ nginx_redmine_url }}.conf"
     state: link
-  #notify: Nginx | Restart
-
-- name: Nginx | Restart
+  notify: Nginx | Restart
+  
+- name: Ngnix | Add the user www-data to {{ redmine_rvm_user }} group
   become: yes
-  service:
-    name: nginx
-    state: restarted
-    enabled: yes
+  user:
+    name: www-data
+    shell: /bin/bash
+    groups:
+      - "{{ redmine_rvm_user }}"
+    append: yes

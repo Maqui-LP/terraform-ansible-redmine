@@ -1,7 +1,7 @@
 ---
 - name: Redmine | Restart Puma
   become: yes
-  service:
+  systemd:
     name: puma
+    daemon_reload: yes
     state: restarted
-    enabled: yes

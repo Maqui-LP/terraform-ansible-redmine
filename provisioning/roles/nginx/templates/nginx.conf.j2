@@ -1,14 +1,14 @@
 upstream app {
-    server unix://{{ redmine_path }}/redmine-{{ redmine_version }}/sockets/puma.sock;
+    server unix://{{ redmine_path }}/redmine-{{ redmine_version }}/tmp/sockets/puma.sock;
 }
 
 server {
     listen 80;
-    server_name "{{ nginx_redmine_url | default('localhost') }}";
+    server_name _;
 
     root "{{ redmine_path }}/redmine-{{ redmine_version }}/public";
     
-    try_files $uri/index.html $uri @app;
+    try_files $uri @app;
     
     location @app {
         proxy_pass http://app;
@@ -23,6 +23,6 @@ server {
     access_log /var/log/nginx/redmine_production.access.log;
     error_log /var/log/nginx/redmine_production.error.log;
     
-    client_max_body_size 10m;
+    client_max_body_size 4G;
     keepalive_timeout 10;
 }

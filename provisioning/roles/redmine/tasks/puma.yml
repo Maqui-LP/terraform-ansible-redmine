@@ -8,19 +8,6 @@
   environment:
     PATH: "{{ redmine_rvm_path }}:{{ ansible_env.PATH }}"
 
-- name: Redmine | Create socket and pid directories
-  #become_user: "{{ redmine_rvm_user }}"
-  become: yes
-  file:
-    path: "{{ redmine_path }}/redmine-{{ redmine_version }}/{{ item }}"
-    state: directory
-    owner: "{{ redmine_rvm_user }}"
-    group: redmine
-    mode: 0775
-  loop:
-    - sockets
-    - pids
-
 - name: Redmine | Set Puma service
   become: yes
   template:
@@ -29,7 +16,7 @@
     force: yes
     owner: "{{ redmine_rvm_user }}"
     mode: 0644
-  #notify: Redmine | Restart Puma
+  notify: Redmine | Restart Puma
 
 - name: Redmine | Config Puma
   become_user: "{{ redmine_rvm_user }}"
@@ -38,20 +25,11 @@
     src: puma.rb.j2
     dest: "{{ redmine_path }}/redmine-{{ redmine_version }}/config/puma.rb"
     mode: 0644
-  #notify: Redmine | Restart Puma
+  notify: Redmine | Restart Puma
 
-# - name: Redmine | Start Puma
-#   #become_user: "{{ redmine_rvm_user }}"
-#   become: yes
-#   shell: "rvm-exec {{ redmine_rvm_ruby_version }} bundle exec puma -C {{ redmine_path }}/redmine-{{ redmine_version }}/config/puma.rb RAILS_ENV=production"
-#   args:
-#     chdir: "{{ redmine_path }}/redmine-{{ redmine_version }}"
-#   environment:
-#     PATH: "{{ redmine_rvm_path }}:{{ ansible_env.PATH }}"  
-
-- name: Redmine | Restart Puma
+- name: Redmine | Start Puma
   become: yes
   service:
     name: puma
-    state: restarted
+    state: started
     enabled: yes

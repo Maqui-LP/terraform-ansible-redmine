@@ -22,9 +22,18 @@
   user:
     name: "{{ redmine_rvm_user }}"
     groups:
-      - redmine
+      - "{{ redmine_user }}"
       - rvm
     shell: /bin/bash
+
+- name: Redmine | Add the user {{ redmine_rvm_user }} to {{ redmine_rvm_user }} group
+  become: yes
+  user:
+    name: "{{ redmine_rvm_user }}"
+    shell: /bin/bash
+    groups:
+      - "{{ redmine_rvm_user }}"
+    append: yes
 
 - name: Redmine | Ensure that ruby is installed
   become: yes
