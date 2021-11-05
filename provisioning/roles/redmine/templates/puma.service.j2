@@ -1,0 +1,14 @@
+[Unit]
+Description=Puma application server for Redmine
+
+[Service]
+Type=simple
+User={{ redmine_rvm_user }}
+WorkingDirectory={{ redmine_path }}/redmine-{{ redmine_version }}
+ExecStartPre=/bin/mkdir -p {{ redmine_path }}/redmine-{{ redmine_version }}/tmp/pids {{ redmine_path }}/redmine-{{ redmine_version }}/tmp/sockets
+ExecStart=/usr/share/rvm/bin/rvm-exec {{ redmine_rvm_ruby_version }} puma -C {{ redmine_path }}/redmine-{{ redmine_version }}/config/puma.rb
+Restart=always
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target

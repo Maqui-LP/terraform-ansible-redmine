@@ -1,0 +1,8 @@
+#!/usr/bin/env puma
+
+application_path = '{{ redmine_path }}/redmine-{{ redmine_version }}'
+directory application_path
+environment 'production'
+pidfile "#{application_path}/tmp/pids/puma.pid"
+state_path "#{application_path}/tmp/pids/puma.state"
+bind "unix://#{application_path}/tmp/sockets/puma.sock"
