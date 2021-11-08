@@ -1,17 +1,4 @@
-#https://www.rosehosting.com/blog/how-to-install-redmine-on-ubuntu-18-04/
 ---
-# - name: System | Add needed apt keys
-#   become: yes
-#   apt_key:
-#     keyserver: hkp://keyserver.ubuntu.com:80
-#     id: 561F9B9CAC40B2F7
-
-# - name: System | Add needed repositories
-#   become: yes
-#   apt_repository:
-#     repo: deb https://oss-binaries.phusionpassenger.com/apt/passenger bionic main
-#     state: present
-
 - name: System | apt-get update
   become: yes
   apt:
@@ -32,10 +19,8 @@
       - libcurl4-openssl-dev
       - libmagickwand-dev
       - libmysqlclient-dev
-      #- libnginx-mod-http-passenger
       - mysql-server
       - nginx
-      #- passenger
       - python3-pip
       - python3-mysqldb
       - unzip

@@ -1,5 +1,5 @@
 ---
-- name: Redmine | Download Readmine version "{{ redmine_version }}"
+- name: Redmine | Download Redmine version "{{ redmine_version }}"
   become: yes
   become_user: "{{ redmine_user }}"
   get_url:
@@ -8,13 +8,12 @@
 
 - name: Redmine | Extract
   become: yes
-  # become_user: "{{ redmine_user }}"
   unarchive:
     src: /tmp/redmine.zip
     dest: "/home/{{ redmine_user }}"
     copy: false
 
-- name: Readmine | Move folder to {{ redmine_path }}
+- name: Redmine | Move folder to {{ redmine_path }}
   become: yes
   command: mv "/home/{{ redmine_user }}/redmine-{{ redmine_version }}" "{{ redmine_path }}"
 

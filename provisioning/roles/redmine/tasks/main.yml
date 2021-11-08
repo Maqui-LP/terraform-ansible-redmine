@@ -20,7 +20,6 @@
 
 # Install ruby dependencies on redmine
 - include: install_deps.yml
-  #when: not redmine_directory.stat.exists
 
 - include: puma.yml
 
