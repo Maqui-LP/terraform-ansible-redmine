@@ -1,6 +1,4 @@
 ---
-# Ansible Documentation says iptables has the parameter destination_ports,
-# but it's failing for me. That's why i use destination_port
 - name: Iptables | Allow connections on multiple ports
   become: yes
   iptables:
@@ -11,6 +9,7 @@
   with_items: 
     - "22"
     - "80"
+    - "443"
 
 - name: Iptables | Set the policy for the INPUT chain to DROP
   become: yes
