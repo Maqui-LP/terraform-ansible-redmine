@@ -15,6 +15,7 @@
   apt:
     state: present
     name:
+      - ruby-full
       - rvm
 
 - name: Redmine | Create user that will use rvm

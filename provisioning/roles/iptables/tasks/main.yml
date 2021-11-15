@@ -2,14 +2,49 @@
 - name: Iptables | Allow connections on multiple ports
   become: yes
   iptables:
+    action: append
     chain: INPUT
     protocol: tcp
     destination_port: "{{ item }}"
     jump: ACCEPT
-  with_items: 
+  with_items:
     - "22"
     - "80"
     - "443"
+  
+- name: Iptables | Allow connections on multiple ports
+  become: yes
+  iptables:
+    action: append
+    chain: INPUT
+    protocol: udp
+    source_port: "{{ item }}"    
+    jump: ACCEPT
+  with_items:
+    - "53"
+
+- name: Iptables | Allow connections on multiple ports
+  become: yes
+  iptables:
+    action: append
+    chain: INPUT
+    protocol: tcp
+    source_port: "{{ item }}"    
+    jump: ACCEPT
+  with_items:
+    - "22"
+    - "80"
+    - "443"
+    - "53"
+    - "3306"
+
+- name: Iptables | Allow loopback
+  become: yes
+  iptables:
+    action: append
+    in_interface: lo
+    chain: INPUT
+    jump: ACCEPT
 
 - name: Iptables | Set the policy for the INPUT chain to DROP
   become: yes

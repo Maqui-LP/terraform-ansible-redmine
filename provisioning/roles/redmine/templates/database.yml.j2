@@ -1,13 +1,13 @@
 development:
   adapter: mysql2
   database: {{ redmine_db_name }}
-  host: localhost
+  host: {{ db_host }}
   username: {{ redmine_db_user }}
   password: {{ redmine_db_pass }}
 
 production:
   adapter: mysql2
   database: {{ redmine_db_name }}
-  host: localhost
+  host: {{ db_host }}
   username: {{ redmine_db_user }}
   password: {{ redmine_db_pass }}
