@@ -1,7 +1,9 @@
 ---
 nginx_redmine_url: localhost
+db_host: localhost
 redmine_db_pass: password
 root_db_pass: root
+use_externalDB: "false"
 guest_user: vagrant
 redmine_version: 4.2.3
 redmine_path: /var/www

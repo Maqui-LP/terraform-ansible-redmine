@@ -3,3 +3,5 @@
 *.retry
 *.pem
 .terraform/
+*.tfstate
+*.tfstate.*

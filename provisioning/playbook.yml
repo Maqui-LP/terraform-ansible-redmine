@@ -3,7 +3,10 @@
   hosts: all
   roles:
     - common
-    - db
+    - role: db
+      when: use_externalDB == "false"
+    - role: externalDB
+      when: use_externalDB == "true"
     - redmine
     - nginx
     - iptables

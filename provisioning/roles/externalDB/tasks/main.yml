@@ -2,6 +2,7 @@
 - name: MySQL | Create Redmine Database
   mysql_db: 
     name: redmine
+    login_host: "{{ db_host }}"
     login_user: root 
     login_password: "{{ root_db_pass }}" 
     encoding: UTF8 
@@ -12,4 +13,6 @@
     password: "{{ redmine_db_pass }}" 
     login_user: root 
     login_password: "{{ root_db_pass }}"
+    login_host: "{{ db_host }}"
+    host: "%"
     priv: "{{ redmine_db_name }}.*:ALL"
