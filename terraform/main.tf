@@ -56,7 +56,7 @@ variable "backup_window" {
 
 variable "backup_snapshot_identifier" {
   type    = string
-  default = "" #null?
+  default = ""
 }
 
 resource "aws_db_instance" "redmine-db" {
@@ -122,20 +122,23 @@ resource "aws_instance" "redmine_app" {
     }
   }
 
-  #Esto ponerlo en un null resource y null provisioners
-  provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu --private-key ./mpoisson.pem -i '${aws_instance.redmine_app.public_ip}', ../provisioning/playbook.yml --extra-vars 'root_db_pass=${var.root_db_pass} redmine_db_pass=${var.redmine_db_pass} db_host=${aws_db_instance.redmine-db.address} use_externalDB=${var.use_externalDB}'"
-
-  }
-
   tags = {
     Name        = "Redmine"
     Environment = "Production"
   }
 }
 
+resource "null_resource" "Ansible" {
+
+  provisioner "local-exec" {
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu --private-key ./mpoisson.pem -i '${aws_instance.redmine_app.public_ip}', ../provisioning/playbook.yml --extra-vars 'root_db_pass=${var.root_db_pass} redmine_db_pass=${var.redmine_db_pass} db_host=${aws_db_instance.redmine-db.address} use_externalDB=${var.use_externalDB}'"
+
+  }
+  
+}
+
 resource "uptimerobot_monitor" "redmine_monitor" {
-  friendly_name = "My Monitor"
+  friendly_name = "Redmine Monitor"
   type          = "http"
   url           = "http://${aws_instance.redmine_app.public_dns}"
 }
