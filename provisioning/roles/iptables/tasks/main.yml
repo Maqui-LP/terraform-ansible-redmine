@@ -12,7 +12,7 @@
     - "80"
     - "443"
   
-- name: Iptables | Allow connections on multiple ports
+- name: Iptables | Allow DNS
   become: yes
   iptables:
     action: append
