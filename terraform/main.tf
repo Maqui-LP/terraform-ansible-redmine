@@ -20,45 +20,6 @@ provider "uptimerobot" {
   api_key = file("./uptimerobotApiKey.txt")
 }
 
-variable "root_db_pass" {
-  type    = string
-  default = "rootpass"
-}
-
-variable "redmine_db_pass" {
-  type    = string
-  default = "password"
-}
-
-variable "use_externalDB" {
-  type    = string
-  default = "true"
-}
-
-# The window to perform maintenance in. Syntax: "ddd:hh24:mi-ddd:hh24:mi". 
-# Eg: "Mon:00:00-Mon:03:00".
-variable "maintenance_window" {
-  type    = string
-  default = "Sun:23:45-Mon:01:45"
-}
-
-variable "backup_retention_period" {
-  type    = number
-  default = 7
-}
-
-# The daily time range (in UTC) during which automated backups are created if they are enabled. 
-# Example: "09:46-10:16". Must not overlap with maintenance_window
-variable "backup_window" {
-  type    = string
-  default = "02:30-03:30"
-}
-
-variable "backup_snapshot_identifier" {
-  type    = string
-  default = ""
-}
-
 resource "aws_db_instance" "redmine-db" {
   allocated_storage       = 20
   storage_type            = "gp2"
@@ -143,12 +104,11 @@ resource "uptimerobot_monitor" "redmine_monitor" {
   url           = "http://${aws_instance.redmine_app.public_dns}"
 }
 
+
 output "monitor_url" {
   value = uptimerobot_monitor.redmine_monitor.url
 }
-output "redmine_app_dns" {
-  value = aws_instance.redmine_app.public_dns
-}
+
 output "redmine_app_ip" {
   value = aws_instance.redmine_app.public_ip
 }
