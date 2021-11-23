@@ -5,7 +5,7 @@ terraform {
       version = "~> 3.64"
     }
     uptimerobot = {
-      source = "louy/uptimerobot"
+      source  = "louy/uptimerobot"
       version = "~> 0.5.1"
     }
   }
@@ -35,6 +35,7 @@ resource "aws_db_instance" "redmine-db" {
   snapshot_identifier     = var.backup_snapshot_identifier
   apply_immediately       = false # Specifies whether any database modifications are applied immediately, or during the next maintenance window
   skip_final_snapshot     = true
+  vpc_security_group_ids  = ["${aws_security_group.rds_sg.id}"]
 
   tags = {
     Name        = "Redmine"
@@ -69,7 +70,7 @@ resource "aws_volume_attachment" "ebs_att" {
 resource "aws_instance" "redmine_app" {
   ami             = "ami-0279c3b3186e54acd" #Ubuntu 18.04
   instance_type   = "t2.micro"
-  security_groups = ["redmine"]
+  vpc_security_group_ids = ["${aws_security_group.redmine_sg.id}"]
   key_name        = "mpoisson"
 
   provisioner "remote-exec" {
@@ -95,7 +96,7 @@ resource "null_resource" "Ansible" {
     command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu --private-key ./mpoisson.pem -i '${aws_instance.redmine_app.public_ip}', ../provisioning/playbook.yml --extra-vars 'root_db_pass=${var.root_db_pass} redmine_db_pass=${var.redmine_db_pass} db_host=${aws_db_instance.redmine-db.address} use_externalDB=${var.use_externalDB}'"
 
   }
-  
+
 }
 
 resource "uptimerobot_monitor" "redmine_monitor" {
