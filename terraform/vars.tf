@@ -37,3 +37,15 @@ variable "backup_snapshot_identifier" {
   type    = string
   default = ""
 }
+
+resource "local_file" "tf_ansible_vars" {
+  content = yamlencode(
+    {
+      root_db_pass = var.root_db_pass
+      redmine_db_pass = var.redmine_db_pass
+      db_host = aws_db_instance.redmine-db.address
+      use_externalDB = var.use_externalDB
+    }
+  ) 
+  filename = "../provisioning/vars/tf_ansible_vars.yml"
+}

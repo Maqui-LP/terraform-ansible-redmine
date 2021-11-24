@@ -68,10 +68,10 @@ resource "aws_volume_attachment" "ebs_att" {
 }
 
 resource "aws_instance" "redmine_app" {
-  ami             = "ami-0279c3b3186e54acd" #Ubuntu 18.04
-  instance_type   = "t2.micro"
+  ami                    = "ami-0279c3b3186e54acd" #Ubuntu 18.04
+  instance_type          = "t2.micro"
   vpc_security_group_ids = ["${aws_security_group.redmine_sg.id}"]
-  key_name        = "mpoisson"
+  key_name               = "mpoisson"
 
   provisioner "remote-exec" {
     inline = ["echo 'Waiting till SSH is ready' "]
@@ -93,9 +93,12 @@ resource "aws_instance" "redmine_app" {
 resource "null_resource" "Ansible" {
 
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu --private-key ./mpoisson.pem -i '${aws_instance.redmine_app.public_ip}', ../provisioning/playbook.yml --extra-vars 'root_db_pass=${var.root_db_pass} redmine_db_pass=${var.redmine_db_pass} db_host=${aws_db_instance.redmine-db.address} use_externalDB=${var.use_externalDB}'"
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu --private-key ./mpoisson.pem -i '${aws_instance.redmine_app.public_ip}', ../provisioning/playbook.yml"
 
   }
+  depends_on = [
+    aws_instance.redmine_app, local_file.tf_ansible_vars
+  ]
 
 }
 
@@ -104,7 +107,6 @@ resource "uptimerobot_monitor" "redmine_monitor" {
   type          = "http"
   url           = "http://${aws_instance.redmine_app.public_dns}"
 }
-
 
 output "monitor_url" {
   value = uptimerobot_monitor.redmine_monitor.url

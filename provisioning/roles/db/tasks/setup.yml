@@ -1,0 +1,44 @@
+---
+- name: MySQL | Start
+  service: name=mysql state=started enabled=yes
+
+## looks for file redmine_db_pass on root directory to set the db password
+- name: generate DB user password
+  set_fact: redmine_db_pass={{ lookup('password', '../../../redmine_db_pass') }}
+  when: redmine_db_pass is not defined or not redmine_db_pass
+
+- name: generate DB root password
+  set_fact: root_db_pass={{ lookup('password', '../../../root_db_pass') }}
+  when: root_db_pass is not defined or not root_db_pass
+
+- name: MySQL | Root verification
+  shell: "mysqladmin -uroot -p{{ root_db_pass }} ping"
+  register: root_configured
+
+# Explained here https://dba.stackexchange.com/questions/209514/what-is-mysql-native-password
+- name: MySQL | Change authentication plugin of root user to mysql_native_password
+  become: yes
+  shell: mysql -u root -e 'UPDATE mysql.user SET plugin="mysql_native_password"
+    WHERE user="root" AND host="localhost"'
+  when: root_configured.stdout|length == 0
+
+# Why flush? https://stackoverflow.com/questions/36463966/mysql-when-is-flush-privileges-in-mysql-really-needed
+- name: MySQL | Flush Privileges
+  become: yes
+  shell: mysql -u root -e 'FLUSH PRIVILEGES'
+  when: root_configured.stdout|length == 0
+
+- name: MySQL | Set root password
+  mysql_user:
+    login_host: localhost
+    login_user: root
+    login_password: ""
+    name: root
+    password: "{{ root_db_pass }}"
+    state: present
+  when: root_configured.stdout| length == 0
+
+- name: MySQL | Restart
+  become: yes
+  service: name=mysql state=restarted
+  when: root_configured.stdout| length == 0

@@ -1,4 +1,0 @@
----
-redmine_db_user: redmine
-redmine_db_name: redmine
-db_host: localhost
