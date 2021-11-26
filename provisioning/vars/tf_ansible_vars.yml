@@ -1,4 +1,0 @@
-"db_host": "terraform-20211124143710108800000003.cpo50nnzcgtc.us-east-1.rds.amazonaws.com"
-"redmine_db_pass": "password"
-"root_db_pass": "rootpass"
-"use_externalDB": "true"
