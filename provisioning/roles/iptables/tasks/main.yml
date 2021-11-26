@@ -8,10 +8,11 @@
 - name: Iptables | Allow new connections
   become: yes
   iptables:
-    chain: INPUT
     action: append
-    cstate: NEW
+    chain: INPUT
+    protocol: tcp
     destination_port: "{{ item }}"
+    ctstate: NEW
     jump: ACCEPT
   with_items:
     - "22"
@@ -26,14 +27,14 @@
     chain: INPUT
     jump: ACCEPT
 
-- name: Iptables | Set the policy for the INPUT chain to DROP
-  become: yes
-  iptables:
-    chain: INPUT
-    policy: DROP
+# - name: Iptables | Set the policy for the INPUT chain to DROP
+#   become: yes
+#   iptables:
+#     chain: INPUT
+#     policy: DROP
 
-- name: Iptables | Set the policy for the OUTPUT chain to ALLOW
-  become: yes
-  iptables:
-    chain: OUTPUT
-    policy: ALLOW
+# - name: Iptables | Set the policy for the OUTPUT chain to ALLOW
+#   become: yes
+#   iptables:
+#     chain: OUTPUT
+#     policy: ALLOW

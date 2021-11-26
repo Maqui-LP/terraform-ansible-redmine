@@ -16,9 +16,6 @@ provider "aws" {
   region  = "us-east-1"
 }
 
-provider "uptimerobot" {
-  api_key = file("./uptimerobotApiKey.txt")
-}
 
 resource "aws_db_instance" "redmine-db" {
   allocated_storage       = 20
@@ -100,16 +97,6 @@ resource "null_resource" "Ansible" {
     aws_instance.redmine_app, local_file.tf_ansible_vars
   ]
 
-}
-
-resource "uptimerobot_monitor" "redmine_monitor" {
-  friendly_name = "Redmine Monitor"
-  type          = "http"
-  url           = "http://${aws_instance.redmine_app.public_dns}"
-}
-
-output "monitor_url" {
-  value = uptimerobot_monitor.redmine_monitor.url
 }
 
 output "redmine_app_ip" {
