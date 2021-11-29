@@ -1,42 +1,23 @@
 ---
-- name: Iptables | Allow connections on multiple ports
+- name: Iptables | Allow related and established connections
+  become: yes
+  iptables:
+    chain: INPUT
+    ctstate: ESTABLISHED,RELATED
+
+- name: Iptables | Allow new connections
   become: yes
   iptables:
     action: append
     chain: INPUT
     protocol: tcp
     destination_port: "{{ item }}"
+    ctstate: NEW
     jump: ACCEPT
   with_items:
     - "22"
     - "80"
     - "443"
-  
-- name: Iptables | Allow DNS
-  become: yes
-  iptables:
-    action: append
-    chain: INPUT
-    protocol: udp
-    source_port: "{{ item }}"    
-    jump: ACCEPT
-  with_items:
-    - "53"
-
-- name: Iptables | Allow connections on multiple ports
-  become: yes
-  iptables:
-    action: append
-    chain: INPUT
-    protocol: tcp
-    source_port: "{{ item }}"    
-    jump: ACCEPT
-  with_items:
-    - "22"
-    - "80"
-    - "443"
-    - "53"
-    - "3306"
 
 - name: Iptables | Allow loopback
   become: yes
@@ -46,8 +27,14 @@
     chain: INPUT
     jump: ACCEPT
 
-- name: Iptables | Set the policy for the INPUT chain to DROP
-  become: yes
-  iptables:
-    chain: INPUT
-    policy: DROP
+# - name: Iptables | Set the policy for the INPUT chain to DROP
+#   become: yes
+#   iptables:
+#     chain: INPUT
+#     policy: DROP
+
+# - name: Iptables | Set the policy for the OUTPUT chain to ALLOW
+#   become: yes
+#   iptables:
+#     chain: OUTPUT
+#     policy: ALLOW

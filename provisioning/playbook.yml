@@ -3,12 +3,11 @@
   hosts: all
   roles:
     - common
-    - role: db
-      when: use_externalDB == "false"
-    - role: externalDB
-      when: use_externalDB == "true"
+    - db
     - redmine
     - nginx
     - iptables
+    - backups
   vars_files:
     - vars/all.yml
+    - vars/tf_ansible_vars.yml

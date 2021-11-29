@@ -5,7 +5,7 @@ terraform {
       version = "~> 3.64"
     }
     uptimerobot = {
-      source = "louy/uptimerobot"
+      source  = "louy/uptimerobot"
       version = "~> 0.5.1"
     }
   }
@@ -16,9 +16,6 @@ provider "aws" {
   region  = "us-east-1"
 }
 
-provider "uptimerobot" {
-  api_key = file("./uptimerobotApiKey.txt")
-}
 
 resource "aws_db_instance" "redmine-db" {
   allocated_storage       = 20
@@ -35,6 +32,7 @@ resource "aws_db_instance" "redmine-db" {
   snapshot_identifier     = var.backup_snapshot_identifier
   apply_immediately       = false # Specifies whether any database modifications are applied immediately, or during the next maintenance window
   skip_final_snapshot     = true
+  vpc_security_group_ids  = ["${aws_security_group.rds_sg.id}"]
 
   tags = {
     Name        = "Redmine"
@@ -67,10 +65,10 @@ resource "aws_volume_attachment" "ebs_att" {
 }
 
 resource "aws_instance" "redmine_app" {
-  ami             = "ami-0279c3b3186e54acd" #Ubuntu 18.04
-  instance_type   = "t2.micro"
-  security_groups = ["redmine"]
-  key_name        = "mpoisson"
+  ami                    = "ami-0279c3b3186e54acd" #Ubuntu 18.04
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = ["${aws_security_group.redmine_sg.id}"]
+  key_name               = "mpoisson"
 
   provisioner "remote-exec" {
     inline = ["echo 'Waiting till SSH is ready' "]
@@ -92,21 +90,13 @@ resource "aws_instance" "redmine_app" {
 resource "null_resource" "Ansible" {
 
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu --private-key ./mpoisson.pem -i '${aws_instance.redmine_app.public_ip}', ../provisioning/playbook.yml --extra-vars 'root_db_pass=${var.root_db_pass} redmine_db_pass=${var.redmine_db_pass} db_host=${aws_db_instance.redmine-db.address} use_externalDB=${var.use_externalDB}'"
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu --private-key ./mpoisson.pem -i '${aws_instance.redmine_app.public_ip}', ../provisioning/playbook.yml"
 
   }
-  
-}
+  depends_on = [
+    aws_instance.redmine_app, local_file.tf_ansible_vars
+  ]
 
-resource "uptimerobot_monitor" "redmine_monitor" {
-  friendly_name = "Redmine Monitor"
-  type          = "http"
-  url           = "http://${aws_instance.redmine_app.public_dns}"
-}
-
-
-output "monitor_url" {
-  value = uptimerobot_monitor.redmine_monitor.url
 }
 
 output "redmine_app_ip" {
