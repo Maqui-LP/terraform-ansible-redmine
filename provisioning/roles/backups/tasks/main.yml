@@ -1,0 +1,67 @@
+---
+- name: Backups | Install rsnapshot
+  become: yes
+  apt:
+    name: rsnapshot
+    state: present
+
+- name: Backups | Create backups directory
+  become: yes
+  become_user: "{{ redmine_rvm_user }}"
+  file:
+    path: "{{ redmine_path }}/redmine-{{ redmine_version }}/backups"
+    state: directory
+    mode: 777
+
+# los datos a guardar estan en  /var/www/redmine-4.2.3/files/ y en /mnt/xvda1/var/www/redmine-4.2.3/files/
+- name: Backups | Configure rnapshot
+  become: yes
+  template:
+    src: rsnapshot.conf.j2
+    dest: "/etc/rsnapshot.conf"
+    force: yes
+    mode: 755
+
+- name: Backups | Change owner to "{{ redmine_rvm_user }}"
+  become: yes
+  file:
+    dest: "{{ redmine_path }}/redmine-{{ redmine_version }}/backups"
+    owner: "{{ redmine_rvm_user }}"
+    group: "{{ redmine_rvm_user }}"
+    recurse: yes
+
+# Every 4 hours 0 */4 * * *
+- name: Backups | Automation for hourly backup
+  become: yes
+  cron:
+    name: "hourly backup"
+    minute: "0"
+    hour: "*/4"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    job: /usr/bin/rsnapshot hourly
+
+# Every day at 23:30, 30 23 * * *
+- name: Backups | Automation for daily backup
+  become: yes
+  cron:
+    name: "daily backup"
+    minute: "30"
+    hour: "23"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    job: /usr/bin/rsnapshot daily
+
+# Every Sunday at 23:00. 0 23 * * 0
+- name: Backups | Automation for weekly backup
+  become: yes
+  cron:
+    name: "weekly backup"
+    minute: "0"
+    hour: "23"
+    day: "*"
+    month: "*"
+    weekday: "0"
+    job: /usr/bin/rsnapshot weekly
